@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -81,13 +81,30 @@ export class ProductsService {
       pagination: {
         page,
         limit,
-        totalPage: Math.ceil(total/ limit)
-      }
-    }
+        totalPage: Math.ceil(total / limit),
+      },
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    const product = await this.db.product.findUnique({
+      where: { id },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+    });
+
+    if(!product){
+      throw new NotFoundException("Product not found")
+    }
+
+    return product
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
