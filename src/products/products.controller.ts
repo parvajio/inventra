@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ProductQueryDto } from './dto/query-product.dto';
 
 @Controller('api/products')
 export class ProductsController {
@@ -24,7 +25,7 @@ export class ProductsController {
   @ApiQuery({ name: 'page', required: false, description: 'Page number for pagination' })
   @ApiQuery({ name: 'limit', required: false, description: 'Number of items per page' })
   @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
-  findAll() {
+  findAll(@Query() query:ProductQueryDto) {
     return this.productsService.findAll(query);
   }
 
