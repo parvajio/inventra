@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -63,8 +67,8 @@ export class CategoriesService {
       },
     });
 
-    if(!category){
-      throw new NotFoundException("Category not found")
+    if (!category) {
+      throw new NotFoundException('Category not found');
     }
 
     return {
@@ -73,8 +77,33 @@ export class CategoriesService {
     };
   }
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+    try {
+      const category = await this.db.category.update({
+        where: { id },
+        data: updateCategoryDto,
+        include: {
+          _count: {
+            select: {
+              products: true,
+            },
+          },
+        },
+      });
+
+      return {
+        ...category,
+        productCount: category._count.products,
+      };
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Category not found');
+      }
+      if (error.code === 'P2002') {
+        throw new ConflictException('Category with this name already exists');
+      }
+      throw error;
+    }
   }
 
   async remove(id: number) {
