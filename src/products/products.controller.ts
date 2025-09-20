@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Search } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, ProductSearchDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { ProductQueryDto } from './dto/query-product.dto';
@@ -27,6 +27,14 @@ export class ProductsController {
   @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
   findAll(@Query() query:ProductQueryDto) {
     return this.productsService.findAll(query);
+  }
+
+  @Get('search')
+  @ApiOperation({summary: "search products by name or description"})
+  @ApiQuery({name: 'q', description: 'search query'})
+  @ApiResponse({status: 200, description: "search results retrieved successfully"})
+  search(@Query() searchDto: ProductSearchDto){
+    return this.productsService.search(searchDto)
   }
 
   @Get(':id')

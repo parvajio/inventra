@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto, ProductSearchDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DatabaseService } from 'src/database/database.service';
 import { ProductQueryDto } from './dto/query-product.dto';
@@ -160,5 +160,46 @@ export class ProductsService {
       }
       throw error;
     }
+  }
+
+  async search(searchDto: ProductSearchDto) {
+    const { q } = searchDto;
+
+    const products = await this.db.product.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: q,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: q,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return {
+      products,
+      query: q,
+      count: products.length,
+    };
   }
 }
