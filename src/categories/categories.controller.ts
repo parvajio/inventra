@@ -28,6 +28,8 @@ export class CategoriesController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all categories with product counts' })
+  @ApiResponse({ status: 200, description: 'Categories retrieved successfully' })
   findAll() {
     return this.categoriesService.findAll();
   }
