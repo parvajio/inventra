@@ -147,7 +147,18 @@ export class ProductsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    try {
+      await this.db.product.delete({
+        where: { id },
+      });
+
+      return { message: 'Product deleted successfully' };
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Product not found');
+      }
+      throw error;
+    }
   }
 }
