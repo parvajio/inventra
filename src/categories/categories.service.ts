@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -45,14 +45,32 @@ export class CategoriesService {
         name: 'asc',
       },
     });
-    return categories.map(({_count, ...rest})=>({
+    return categories.map(({ _count, ...rest }) => ({
       ...rest,
-      productCount: _count.products
+      productCount: _count.products,
     }));
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+    const category = await this.db.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+    });
+
+    if(!category){
+      throw new NotFoundException("Category not found")
+    }
+
+    return {
+      ...category,
+      productCount: category._count.products,
+    };
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
