@@ -38,3 +38,11 @@ export class CreateProductDto {
   @IsUUID()
   categoryId: string;
 }
+
+
+export class ProductSearchDto {
+  @ApiProperty({ example: 'iPhone' })
+  @IsString()
+  @MinLength(1)
+  q: string;
+}
