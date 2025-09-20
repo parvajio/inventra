@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -106,7 +107,38 @@ export class CategoriesService {
     }
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    try {
+      // Check if category has products
+      const categoryWithProducts = await this.db.category.findUnique({
+        where: { id },
+        include: {
+          _count: {
+            select: {
+              products: true,
+            },
+          },
+        },
+      });
+
+      if (!categoryWithProducts) {
+        throw new NotFoundException('Category not found');
+      }
+
+      if (categoryWithProducts._count.products > 0) {
+        throw new BadRequestException('Cannot delete category with existing products');
+      }
+
+      await this.db.category.delete({
+        where: { id },
+      });
+
+      return { message: 'Category deleted successfully' };
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Category not found');
+      }
+      throw error;
+    }
   }
 }
