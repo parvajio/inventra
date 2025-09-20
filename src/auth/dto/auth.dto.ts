@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, MinLength } from "class-validator";
 
-export class ResisterDto{
+export class RegisterDto{
     @ApiProperty({example: "parvajio25@gmail.com"})
     @IsEmail()
     email: string;
