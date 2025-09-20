@@ -35,8 +35,12 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update product' })
+  @ApiResponse({ status: 200, description: 'Product updated successfully' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 400, description: 'Invalid data or category not found' })
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')

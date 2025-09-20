@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DatabaseService } from 'src/database/database.service';
@@ -100,15 +104,47 @@ export class ProductsService {
       },
     });
 
-    if(!product){
-      throw new NotFoundException("Product not found")
+    if (!product) {
+      throw new NotFoundException('Product not found');
     }
 
-    return product
+    return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    // If categoryId is being updated, verify it exists
+    if (updateProductDto.categoryId) {
+      const category = await this.db.category.findUnique({
+        where: { id: updateProductDto.categoryId },
+      });
+
+      if (!category) {
+        throw new BadRequestException('Category not found');
+      }
+    }
+
+    try {
+      const product = await this.db.product.update({
+        where: { id },
+        data: updateProductDto,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+            },
+          },
+        },
+      });
+
+      return product;
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Product not found');
+      }
+      throw error;
+    }
   }
 
   remove(id: number) {
