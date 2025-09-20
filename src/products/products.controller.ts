@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('api/products')
 export class ProductsController {
@@ -17,8 +17,15 @@ export class ProductsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all products with filters and pagination' })
+  @ApiQuery({ name: 'categoryId', required: false, description: 'Filter by category ID' })
+  @ApiQuery({ name: 'minPrice', required: false, description: 'Minimum price filter' })
+  @ApiQuery({ name: 'maxPrice', required: false, description: 'Maximum price filter' })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number for pagination' })
+  @ApiQuery({ name: 'limit', required: false, description: 'Number of items per page' })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
   findAll() {
-    return this.productsService.findAll();
+    return this.productsService.findAll(query);
   }
 
   @Get(':id')

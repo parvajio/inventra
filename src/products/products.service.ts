@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DatabaseService } from 'src/database/database.service';
+import { ProductQueryDto } from './dto/query-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -33,8 +34,56 @@ export class ProductsService {
     return product;
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll(query: ProductQueryDto) {
+    const { categoryId, minPrice, maxPrice, page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
+
+    // where obj
+    const where: any = {};
+
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      where.price = {};
+      if (minPrice !== undefined) {
+        where.price.gte = minPrice;
+      }
+      if (maxPrice !== undefined) {
+        where.price.lte = maxPrice;
+      }
+    }
+
+    const [products, total] = await Promise.all([
+      this.db.product.findMany({
+        where,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.db.product.count({ where }),
+    ]);
+
+    return {
+      products,
+      pagination: {
+        page,
+        limit,
+        totalPage: Math.ceil(total/ limit)
+      }
+    }
   }
 
   findOne(id: number) {
