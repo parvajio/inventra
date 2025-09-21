@@ -38,4 +38,18 @@ export class AuthService {
 
     return user
   }
+
+  async validateUser(userId: string){
+    const user = await this.db.user.findUnique({
+      where:{id: userId},
+      select:{
+        id: true,
+        email: true,
+        username: true,
+        createdAt: true
+      }
+    })
+
+    return user;
+  }
 }
