@@ -411,7 +411,7 @@ npm run test:e2e
 
 ##  Author
 
-Created by [Your Name] - [Md. Parvaj Mosharof](https://github.com/parvajio)
+Created by me - [Md. Parvaj Mosharof](https://github.com/parvajio)
 
 ##  Acknowledgments
 
