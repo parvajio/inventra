@@ -155,7 +155,7 @@ Content-Type: application/json
   "price": 999.99,
   "stock": 50,
   "imageUrl": "https://example.com/image.jpg",
-  "categoryId": "clx1234567890abcdef"
+  "categoryId": "cmftn65j80001iq28qlw6ge7m"
 }
 ```
 
