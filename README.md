@@ -1,98 +1,434 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# E-Commerce Inventory API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust RESTful API for e-commerce inventory management built with NestJS, TypeScript, and PostgreSQL. This API provides secure CRUD operations for products and categories with JWT-based authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+##  Live Demo
 
-## Description
+- **API Base URL**: https://inventra-api-a54o.onrender.com
+- **API Documentation**: https://inventra-api-a54o.onrender.com/api/docs
+- **Database**: PostgreSQL hosted on neon
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🛠️ Tech Stack
 
-## Project setup
+- **Backend**: Node.js with NestJS & TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT (JSON Web Tokens)
+- **API Documentation**: Swagger/OpenAPI
+- **Architecture**: Domain-Driven Design (DDD) with Repository pattern
+- **Validation**: Class-validator with DTOs
+- **Hosting**: Render (Backend) + Neon (Database)
 
-```bash
-$ npm install
+## 📋 Features
+
+### Authentication
+- ✅ User registration with email, username, and hashed password
+- ✅ User login with JWT token generation
+- ✅ JWT-based authorization for protected endpoints
+- ✅ Password hashing with bcrypt
+
+### Product Management
+- ✅ Create products with name, description, price, stock, category, and optional image
+- ✅ List products with advanced filtering:
+  - Filter by category
+  - Filter by price range (min/max)
+  - Pagination support
+- ✅ Get single product by ID with category details
+- ✅ Update product information
+- ✅ Delete products
+- ✅ Search products by name or description
+- ✅ Comprehensive error handling (404, 400, etc.)
+
+### Category Management
+- ✅ Create categories with unique names
+- ✅ List all categories with product counts
+- ✅ Get single category by ID
+- ✅ Update category information
+- ✅ Delete categories (only if no linked products)
+- ✅ Prevent deletion of categories with existing products
+
+### Additional Features
+- ✅ Swagger API documentation with examples
+- ✅ Input validation and sanitization
+- ✅ CORS enabled for frontend integration
+- ✅ Global exception handling
+- ✅ TypeScript for type safety
+- ✅ Clean, maintainable code following SOLID principles
+
+##  Quick Start
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- PostgreSQL database (or use Neon)
+
+### Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/parvajio/inventra.git
+   cd inventra
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**
+   Create a `.env` file in the root directory:
+   ```env
+   DATABASE_URL="postgresql://username:password@localhost:5432/inventra"
+   JWT_SECRET="your-super-secret-jwt-key"
+   PORT=3000
+   ```
+
+4. **Database Setup**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+   
+   # Run database migrations
+   npx prisma migrate dev
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run start:dev
+   ```
+
+6. **Access the API**
+   - API: http://localhost:3000
+   - Documentation: http://localhost:3000/api/docs
+
+### Production Deployment
+
+The application is already deployed on Render with the following configuration:
+
+1. **Backend**: Deployed on Render
+   - URL: https://inventra-api-a54o.onrender.com
+   - Auto-deploys from main branch
+   - Environment variables configured on Render dashboard
+
+2. **Database**: PostgreSQL on Neon
+   - Managed PostgreSQL database
+   - Connection string configured in production environment
+
+##  API Documentation
+
+### Authentication Endpoints
+
+#### Register User
+```http
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "username": "johndoe",
+  "password": "password123"
+}
 ```
 
-## Compile and run the project
+#### Login User
+```http
+POST /api/auth/login
+Content-Type: application/json
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
 ```
 
-## Run tests
+### Product Endpoints
 
-```bash
-# unit tests
-$ npm run test
+#### Create Product
+```http
+POST /api/products
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+{
+  "name": "iPhone 15 Pro",
+  "description": "Latest iPhone with advanced features",
+  "price": 999.99,
+  "stock": 50,
+  "imageUrl": "https://example.com/image.jpg",
+  "categoryId": "clx1234567890abcdef"
+}
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+#### Get All Products (with filters)
+```http
+GET /api/products?categoryId=clx123&minPrice=100&maxPrice=1000&page=1&limit=10
+Authorization: Bearer <jwt-token>
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### Search Products
+```http
+GET /api/products/search?q=iPhone
+Authorization: Bearer <jwt-token>
+```
 
-## Resources
+#### Get Single Product
+```http
+GET /api/products/{id}
+Authorization: Bearer <jwt-token>
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+#### Update Product
+```http
+PATCH /api/products/{id}
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+{
+  "name": "Updated Product Name",
+  "price": 899.99
+}
+```
 
-## Support
+#### Delete Product
+```http
+DELETE /api/products/{id}
+Authorization: Bearer <jwt-token>
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Category Endpoints
 
-## Stay in touch
+#### Create Category
+```http
+POST /api/categories
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+{
+  "name": "Electronics",
+  "description": "Electronic devices and accessories"
+}
+```
 
-## License
+#### Get All Categories
+```http
+GET /api/categories
+Authorization: Bearer <jwt-token>
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+#### Get Single Category
+```http
+GET /api/categories/{id}
+Authorization: Bearer <jwt-token>
+```
+
+#### Update Category
+```http
+PATCH /api/categories/{id}
+Authorization: Bearer <jwt-token>
+Content-Type: application/json
+
+{
+  "name": "Updated Category Name",
+  "description": "Updated description"
+}
+```
+
+#### Delete Category
+```http
+DELETE /api/categories/{id}
+Authorization: Bearer <jwt-token>
+```
+
+##  Database Schema
+
+### Users Table
+- `id`: Primary key (CUID)
+- `email`: Unique email address
+- `username`: Unique username
+- `password`: Hashed password
+- `createdAt`: Timestamp
+- `updatedAt`: Timestamp
+
+### Categories Table
+- `id`: Primary key (CUID)
+- `name`: Unique category name
+- `description`: Optional description
+- `createdAt`: Timestamp
+- `updatedAt`: Timestamp
+
+### Products Table
+- `id`: Primary key (CUID)
+- `name`: Product name
+- `description`: Optional description
+- `price`: Decimal price (10,2)
+- `stock`: Integer stock count
+- `imageUrl`: Optional image URL
+- `categoryId`: Foreign key to categories
+- `createdAt`: Timestamp
+- `updatedAt`: Timestamp
+
+##  Development
+
+### Project Structure
+```
+src/
+├── auth/                 # Authentication module
+│   ├── dto/             # Data Transfer Objects
+│   ├── strategies/      # JWT strategy and guards
+│   └── *.ts            # Auth controller and service
+├── categories/          # Categories module
+│   ├── dto/            # Category DTOs
+│   └── *.ts           # Category controller and service
+├── products/           # Products module
+│   ├── dto/           # Product DTOs
+│   └── *.ts          # Product controller and service
+├── database/          # Database module
+│   └── *.ts         # Prisma service
+└── main.ts           # Application entry point
+```
+
+### Available Scripts
+
+```bash
+# Development
+npm run start:dev      # Start with hot reload
+npm run start:debug    # Start with debug mode
+
+# Production
+npm run build         # Build the application
+npm run start:prod    # Start production server
+
+# Testing
+npm run test          # Run unit tests
+npm run test:watch    # Run tests in watch mode
+npm run test:e2e      # Run e2e tests
+npm run test:cov      # Run tests with coverage
+
+# Code Quality
+npm run lint          # Run ESLint
+npm run format        # Format code with Prettier
+```
+
+### Database Commands
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Create and apply migration
+npx prisma migrate dev
+
+# Reset database
+npx prisma migrate reset
+
+# View database in Prisma Studio
+npx prisma studio
+```
+
+##  Testing
+
+The API includes comprehensive test coverage:
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage
+npm run test:cov
+
+# Run e2e tests
+npm run test:e2e
+```
+
+##  API Response Examples
+
+### Successful Product Creation
+```json
+{
+  "id": "clx1234567890abcdef",
+  "name": "iPhone 15 Pro",
+  "description": "Latest iPhone with advanced features",
+  "price": 999.99,
+  "stock": 50,
+  "imageUrl": "https://example.com/image.jpg",
+  "categoryId": "clx1234567890abcdef",
+  "createdAt": "2024-01-20T10:30:00.000Z",
+  "updatedAt": "2024-01-20T10:30:00.000Z",
+  "category": {
+    "id": "clx1234567890abcdef",
+    "name": "Electronics",
+    "description": "Electronic devices and accessories"
+  }
+}
+```
+
+### Paginated Product List
+```json
+{
+  "products": [...],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "totalPage": 5
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "statusCode": 404,
+  "message": "Product not found",
+  "error": "Not Found"
+}
+```
+
+##  Security Features
+
+- JWT-based authentication
+- Password hashing with bcrypt
+- Input validation and sanitization
+- CORS configuration
+- Protected routes with guards
+- SQL injection prevention through Prisma ORM
+
+##  Deployment
+
+### Render Deployment
+1. Connect your GitHub repository to Render
+2. Create a new Web Service
+3. Configure build command: `npm install && npm run build`
+4. Configure start command: `npm run start:prod`
+5. Set environment variables:
+   - `DATABASE_URL`: Your PostgreSQL connection string
+   - `JWT_SECRET`: Your JWT secret key
+   - `PORT`: 3000 (or let Render assign)
+
+### Database Setup
+1. Create a PostgreSQL database on Neon
+2. Get the connection string
+3. Run migrations: `npx prisma migrate deploy`
+
+##  Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+##  License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+##  Author
+
+Created by [Your Name] - [GitHub Profile](https://github.com/yourusername)
+
+##  Acknowledgments
+
+- NestJS framework
+- Prisma ORM
+- PostgreSQL
+- Render for hosting
+- Neon for database hosting
