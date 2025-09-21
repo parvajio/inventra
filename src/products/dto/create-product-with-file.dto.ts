@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsPositive, IsString, IsUUID, MinLength } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive, IsString, IsUUID, MinLength, Matches } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateProductWithFileDto {
   @ApiProperty({ example: 'iPhone 15 Pro' })
@@ -15,15 +16,15 @@ export class CreateProductWithFileDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 999.99 })
-  @IsNumber()
-  @IsPositive()
-  price: number;
+  @ApiProperty({ example: '999.99' })
+  @IsString()
+  @Matches(/^\d+(\.\d{1,2})?$/, { message: 'price must be a valid positive number' })
+  price: string;
 
-  @ApiProperty({ example: 50 })
-  @IsNumber()
-  @IsPositive()
-  stock: number;
+  @ApiProperty({ example: '50' })
+  @IsString()
+  @Matches(/^\d+$/, { message: 'stock must be a valid positive integer' })
+  stock: string;
 
   @ApiProperty({ example: 'clx1234567890abcdef' })
   @IsString()
