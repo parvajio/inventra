@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsNumber, IsOptional, IsPositive, IsString, IsUUID, MinLength } from "class-validator";
+import { IsNumber, IsOptional, IsPositive, IsString, MinLength, Matches } from "class-validator";
 
 export class CreateProductDto {
   @ApiProperty({ example: 'iPhone 15 Pro' })
@@ -35,7 +35,7 @@ export class CreateProductDto {
 
   @ApiProperty({ example: 'cmftn65j80001iq28qlw6ge7m' })
   @IsString()
-  @MinLength(1)
+  @Matches(/^c[a-z0-9]{24}$/, { message: 'categoryId must be a valid CUID' })
   categoryId: string;
 }
 
