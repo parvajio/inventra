@@ -409,21 +409,9 @@ npm run test:e2e
 2. Get the connection string
 3. Run migrations: `npx prisma migrate deploy`
 
-##  Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-##  License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ##  Author
 
-Created by [Your Name] - [GitHub Profile](https://github.com/yourusername)
+Created by [Your Name] - [Md. Parvaj Mosharof](https://github.com/parvajio)
 
 ##  Acknowledgments
 
