@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { IsNumber, IsOptional, IsPositive, IsString} from "class-validator";
 
 export class ProductQueryDto {
-  @ApiProperty({ example: 'clx1234567890abcdef', required: false })
+  @ApiProperty({ example: 'cmftn65j80001iq28qlw6ge7m', required: false })
   @IsOptional()
   @IsString()
   categoryId?: string;

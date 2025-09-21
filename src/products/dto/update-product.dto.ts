@@ -36,9 +36,9 @@ export class UpdateProductDto {
   @IsString()
   imageUrl?: string;
 
-  @ApiProperty({ example: 'clx1234567890abcdef', required: false })
+  @ApiProperty({ example: 'cmftn65j80001iq28qlw6ge7m', required: false })
   @IsOptional()
   @IsString()
-  @IsUUID()
+  @MinLength(1)
   categoryId?: string;
 }

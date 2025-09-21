@@ -33,9 +33,9 @@ export class CreateProductDto {
   @IsString()
   imageUrl?: string;
 
-  @ApiProperty({ example: 'clx1234567890abcdef' })
+  @ApiProperty({ example: 'cmftn65j80001iq28qlw6ge7m' })
   @IsString()
-  @IsUUID()
+  @MinLength(1)
   categoryId: string;
 }
 
