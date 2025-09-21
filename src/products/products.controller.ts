@@ -1,16 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Search, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Search, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductsService } from './products.service';
 import { CreateProductDto, ProductSearchDto } from './dto/create-product.dto';
+import { CreateProductWithFileDto } from './dto/create-product-with-file.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiConsumes } from '@nestjs/swagger';
 import { ProductQueryDto } from './dto/query-product.dto';
 import { JwtAuthGuard } from 'src/auth/strategies/jwt-auth.guard';
+import { UploadService } from 'src/upload/upload.service';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('api/products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new product' })
@@ -18,6 +24,56 @@ export class ProductsController {
   @ApiResponse({ status: 400, description: 'Invalid data or category not found' })
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
+  }
+
+  @Post('with-image')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiOperation({ summary: 'Create a new product with image upload' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'Product with image successfully created' })
+  @ApiResponse({ status: 400, description: 'Invalid data, category not found, or invalid file' })
+  async createWithImage(
+    @Body() createProductDto: CreateProductWithFileDto,
+    @UploadedFile() image?: Express.Multer.File,
+  ) {
+    let imageUrl: string | undefined;
+
+    if (image) {
+      if (!this.uploadService.validateFileType(image)) {
+        throw new BadRequestException(
+          'Invalid file type. Only JPEG, PNG, GIF, and WebP images are allowed.',
+        );
+      }
+
+      if (!this.uploadService.validateFileSize(image)) {
+        throw new BadRequestException('File size too large. Maximum size is 5MB.');
+      }
+      
+      imageUrl = await this.uploadService.fileToBase64(image);
+    }
+
+    // string to numbers
+    const price = Number(createProductDto.price);
+    const stock = Number(createProductDto.stock);
+
+    if (isNaN(price) || price <= 0) {
+      throw new BadRequestException('Price must be a valid positive number');
+    }
+
+    if (isNaN(stock) || stock <= 0 || !Number.isInteger(stock)) {
+      throw new BadRequestException('Stock must be a valid positive integer');
+    }
+
+    const productData: CreateProductDto = {
+      name: createProductDto.name,
+      description: createProductDto.description,
+      price,
+      stock,
+      categoryId: createProductDto.categoryId,
+      imageUrl,
+    };
+
+    return this.productsService.create(productData);
   }
 
   @Get()
