@@ -13,6 +13,7 @@ A robust RESTful API for e-commerce inventory management built with NestJS, Type
 - **Backend**: Node.js with NestJS & TypeScript
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: JWT (JSON Web Tokens)
+- **File Upload**: Multer for image handling
 - **API Documentation**: Swagger/OpenAPI
 - **Architecture**: Domain-Driven Design (DDD) with Repository pattern
 - **Validation**: Class-validator with DTOs
@@ -28,6 +29,8 @@ A robust RESTful API for e-commerce inventory management built with NestJS, Type
 
 ### Product Management
 - ✅ Create products with name, description, price, stock, category, and optional image
+- ✅ **File Upload**: Upload product images with Multer (JPEG, PNG, GIF, WebP)
+- ✅ **Base64 Storage**: Images stored as base64 strings in database
 - ✅ List products with advanced filtering:
   - Filter by category
   - Filter by price range (min/max)
@@ -65,37 +68,37 @@ A robust RESTful API for e-commerce inventory management built with NestJS, Type
 ### Local Development Setup
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/parvajio/inventra.git
-   cd inventra
-   ```
+```bash
+git clone https://github.com/parvajio/inventra.git
+cd inventra
+```
 
 2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
 3. **Environment Configuration**
    Create a `.env` file in the root directory:
-   ```env
+```env
    DATABASE_URL="postgresql://username:password@localhost:5432/inventra"
    JWT_SECRET="your-super-secret-jwt-key"
-   PORT=3000
-   ```
+PORT=3000
+```
 
 4. **Database Setup**
-   ```bash
-   # Generate Prisma client
+```bash
+# Generate Prisma client
    npx prisma generate
-   
-   # Run database migrations
+
+# Run database migrations
    npx prisma migrate dev
-   ```
+```
 
 5. **Start the development server**
-   ```bash
-   npm run start:dev
-   ```
+```bash
+npm run start:dev
+```
 
 6. **Access the API**
    - API: http://localhost:3000
@@ -124,9 +127,9 @@ POST /api/auth/register
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "username": "johndoe",
-  "password": "password123"
+    "email": "user@example.com",
+    "username": "johndoe",
+    "password": "password123"
 }
 ```
 
@@ -136,8 +139,8 @@ POST /api/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "password123"
+    "email": "user@example.com",
+    "password": "password123"
 }
 ```
 
@@ -150,13 +153,28 @@ Authorization: Bearer <jwt-token>
 Content-Type: application/json
 
 {
-  "name": "iPhone 15 Pro",
-  "description": "Latest iPhone with advanced features",
-  "price": 999.99,
-  "stock": 50,
+    "name": "iPhone 15 Pro",
+    "description": "Latest iPhone with advanced features",
+    "price": 999.99,
+    "stock": 50,
   "imageUrl": "https://example.com/image.jpg",
   "categoryId": "cmftn65j80001iq28qlw6ge7m"
 }
+```
+
+#### Create Product with Image Upload
+```http
+POST /api/products/with-image
+Authorization: Bearer <jwt-token>
+Content-Type: multipart/form-data
+
+Form Data:
+- name: "iPhone 15 Pro"
+- description: "Latest iPhone with advanced features"
+- price: 999.99
+- stock: 50
+- categoryId: "cmftn65j80001iq28qlw6ge7m"
+- image: [file upload - JPEG, PNG, GIF, WebP, max 5MB]
 ```
 
 #### Get All Products (with filters)
@@ -193,6 +211,27 @@ Content-Type: application/json
 ```http
 DELETE /api/products/{id}
 Authorization: Bearer <jwt-token>
+```
+
+### File Upload Endpoints
+
+#### Upload Product Image
+```http
+POST /api/upload/image
+Authorization: Bearer <jwt-token>
+Content-Type: multipart/form-data
+
+Form Data:
+- file: [image file - JPEG, PNG, GIF, WebP, max 5MB]
+```
+
+**Response:**
+```json
+{
+  "message": "Image uploaded successfully",
+  "imageUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ...",
+  "filename": "1640995200000-abc123def456.jpg"
+}
 ```
 
 ### Category Endpoints
